@@ -1,0 +1,42 @@
+[package]
+name = "rust-app"
+version = "0.2.0"
+authors = ["Daniel <qiuzhanghua@icloud.com>"]
+edition = "2018"
+build = "src/build.rs"
+
+[dependencies]
+viperus = "0.1" # 0.1.10
+log = "0.4"  # 0.4.6
+log4rs = "0.10"  # 0.10.0
+env_logger = "0.6"
+actix-web = "2.0" # 2.0
+actix-rt = "1.0" # 2.0
+actix-service = "1.0"
+handlebars = "2.0"
+# oxide-auth = "0.4" # 0.4.5 与actix-session冲突
+bytes = "0.5"
+futures = "0.3"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+json="0.12"
+r2d2 = "0.8"
+diesel = { version = "^1.1.0", features = ["mysql", "r2d2"] }
+uuid = { version = "0.8", features = ["serde", "v5"] }
+ring = "0.16"
+actix-session = "0.3"
+actix-redis = { version = "0.8", features = ["web"] }
+actix-identity = "0.2"
+actix-files = "0.2"
+actix-web-static-files = "0.3.0"  #embeded static resource in end binary
+actix-web-middleware-requestid = "2"
+async-std = "1.5"
+mysql = "*"
+postgres = "0.17"
+redis = "0.15"
+
+lazy_static = "1.4"
+# sqlx = "0.2" #Type-safe SQL #Truly Asynchronous
+
+[build-dependencies]
+actix-web-static-files = "0.3"
