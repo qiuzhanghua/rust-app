@@ -14,6 +14,7 @@ actix-web = "2.0" # 2.0
 actix-rt = "1.0" # 2.0
 actix-service = "1.0"
 handlebars = "2.0"
+actix-multipart = "0.2"
 # oxide-auth = "0.4" # 0.4.5 与actix-session冲突
 bytes = "0.5"
 futures = "0.3"
@@ -36,6 +37,7 @@ postgres = "0.17"
 redis = "0.15"
 
 lazy_static = "1.4"
+regex = "1"
 # sqlx = "0.2" #Type-safe SQL #Truly Asynchronous
 
 [build-dependencies]

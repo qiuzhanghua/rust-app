@@ -1,6 +1,11 @@
 # Changes
 
 
+## 0.3.0 - 2020-02-05
+### Added
+1. add file upload
+2. convert decimal numeric character to unicode
+
 ## 0.2.5 - 2020-02-05
 ### Added
 1. use suffix to judge rendering html/json

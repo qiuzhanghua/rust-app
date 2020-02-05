@@ -1,4 +1,7 @@
 #[macro_use]
+extern crate lazy_static;
+
+#[macro_use]
 extern crate actix_web;
 
 #[macro_use]
@@ -11,16 +14,58 @@ use actix_web::{error, middleware, web, App, HttpRequest, HttpServer, HttpRespon
 use actix_web_static_files;
 use bytes::{Bytes, BytesMut};
 use futures::StreamExt;
+use async_std::prelude::*;
 
 use std::collections::HashMap;
 use handlebars::Handlebars;
 use actix_web::web::route;
+use actix_multipart::Multipart;
+use regex::Captures;
+use regex::Regex;
 
 include!(concat!(env!("OUT_DIR"), "/generated.rs"));
 
 async fn index(_req: HttpRequest) -> &'static str {
 //    debug!("REQ: {:?}", req);
     "Hello world!"
+}
+
+fn select_file() -> HttpResponse {
+    let html = r###"<html>
+        <head><title>Select file to upload</title></head>
+        <body>
+            <form target="/" method="post" enctype="multipart/form-data">
+                <input type="file" multiple name="file"/>
+                <input type="submit" value="Submit"></button>
+            </form>
+        </body>
+    </html>"###;
+
+    HttpResponse::Ok().body(html)
+}
+
+async fn save_file(mut payload: Multipart) -> Result<HttpResponse, Error> {
+    // iterate over multipart stream
+    while let Some(item) = payload.next().await {
+        let mut field = item?;
+        let content_type = field
+            .content_disposition()
+            .ok_or_else(|| actix_web::error::ParseError::Incomplete)?;
+//        println!("content type : {:?}", content_type);
+        let filename = content_type
+            .get_filename()
+            .ok_or_else(|| actix_web::error::ParseError::Incomplete)?;
+        let filename = dnc_unicode(filename);
+        let filepath = format!("./log/{}", filename);
+        let mut f = async_std::fs::File::create(filepath).await?;
+
+        // Field in turn is stream of *Bytes* object
+        while let Some(chunk) = field.next().await {
+            let data = chunk.unwrap();
+            f.write_all(&data).await?;
+        }
+    }
+    Ok(HttpResponse::Ok().body("OK, uploaded!".to_string()))
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -109,14 +154,25 @@ async fn main() -> std::io::Result<()> {
 //            .service(web::resource("/").to(index)            )
             .service(web::resource("/")
                 .route(web::get().to(index))
-                .route(web::post().to(index_post)
-                ))
+                .route(web::post().to(index_post)))
+            .service(web::resource("/file.html")
+                .route(web::get().to(select_file))
+                .route(web::post().to(save_file)))
             .service(web::resource("/again").to(index2))
             .service(user)
     })
         .bind("127.0.0.1:8080")?
         .run()
         .await
+}
+
+
+// decimal numeric character to unicode
+pub fn dnc_unicode(str: &str) -> String {
+    lazy_static! {
+        static ref RE: Regex = Regex::new(r##"(&#(\d{1,5});)"##).unwrap();
+    }
+    RE.replace_all(str, |caps: &Captures| { format!("{}", std::char::from_u32(caps[2].parse::<u32>().ok().unwrap()).unwrap()) }).to_string()
 }
 
 #[cfg(test)]
