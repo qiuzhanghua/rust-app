@@ -5,11 +5,16 @@ extern crate actix_web;
 extern crate serde_json;
 
 // use log::*;
-use actix_web::{middleware, web, App, HttpRequest, HttpServer, HttpResponse};
+use json::JsonValue;
+use serde::{Deserialize, Serialize};
+use actix_web::{error, middleware, web, App, HttpRequest, HttpServer, HttpResponse, HttpMessage, Error};
 use actix_web_static_files;
+use bytes::{Bytes, BytesMut};
+use futures::StreamExt;
 
 use std::collections::HashMap;
 use handlebars::Handlebars;
+use actix_web::web::route;
 
 include!(concat!(env!("OUT_DIR"), "/generated.rs"));
 
@@ -18,23 +23,67 @@ async fn index(_req: HttpRequest) -> &'static str {
     "Hello world!"
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+struct MyObj {
+    name: String,
+    number: i32,
+}
+
+const MAX_SIZE: usize = 262_144; // max payload size is 256k
+
+async fn index_post(item: web::Json<MyObj>) -> HttpResponse {
+//, item: web::Json<MyObj>
+    // mut payload: web::Payload
+//    println!("{:?}", req);
+//    println!("{:?}", item);
+    HttpResponse::Ok().json(item.0)
+//    HttpResponse::Ok().body("What")
+    // body is loaded, now we can deserialize json-rust
+//    let result = json::parse(std::str::from_utf8(&body).unwrap()); // return Result
+//    let injson: JsonValue = match result {
+//        Ok(v) => v,
+//        Err(e) => json::object! {"err" => e.to_string() },
+//    };
+//    Ok(HttpResponse::Ok()
+//        .content_type("application/json")
+//        .body(injson.dump()))
+    // payload is a stream of Bytes objects
+//    let mut body = BytesMut::new();
+//    while let Some(chunk) = payload.next().await {
+//        let chunk = chunk?;
+//        // limit max size of in-memory payload
+//        if (body.len() + chunk.len()) > MAX_SIZE {
+//            return Err(error::ErrorBadRequest("overflow"));
+//        }
+//        body.extend_from_slice(&chunk);
+//    }
+//
+//    // body is loaded, now we can deserialize serde-json
+//    let obj = serde_json::from_slice::<MyObj>(&body)?;
+//    Ok(HttpResponse::Ok().json(obj)) // <- send response
+}
+
 async fn index2() -> HttpResponse {
     HttpResponse::Ok().body("Hello world again!")
 }
 
 
-#[get("/{user}/{data}")]
-async fn user(
-    hb: web::Data<Handlebars>,
-    info: web::Path<(String, String)>,
+#[get("/{user}/{data}.{ext}")]
+async fn user(hb: web::Data<Handlebars>,
+              // req: HttpRequest,
+              info: web::Path<(String, String, String)>,
 ) -> HttpResponse {
+//    println!("{:?}", req.headers().get("accept".to_string()).unwrap());
     let data = json!({
         "user": info.0,
         "data": info.1
     });
-    let body = hb.render("user", &data).unwrap();
-
-    HttpResponse::Ok().body(body)
+    if info.2 == "html" {
+        let body = hb.render("user", &data).unwrap();
+        HttpResponse::Ok().body(body)
+    } else {
+        HttpResponse::Ok().json(data)
+    }
 }
 
 #[actix_rt::main]
@@ -52,11 +101,16 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .wrap(middleware::Logger::default())
+//            .data(web::JsonConfig::default().limit(4096))
             .service(actix_web_static_files::ResourceFiles::new(
                 "/public", generate(),
             ))
             .app_data(handlebars_ref.clone())
-            .service(web::resource("/").to(index))
+//            .service(web::resource("/").to(index)            )
+            .service(web::resource("/")
+                .route(web::get().to(index))
+                .route(web::post().to(index_post)
+                ))
             .service(web::resource("/again").to(index2))
             .service(user)
     })
