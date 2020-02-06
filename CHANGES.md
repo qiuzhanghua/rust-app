@@ -1,6 +1,14 @@
 # Changes
 
 
+## 0.4.0 - 2020-02-06
+### Added
+1. diesel(ORM) for mysql(CRUD)
+2. connect to handlers
+
+### changed
+1. refactor
+
 ## 0.3.0 - 2020-02-05
 ### Added
 1. add file upload

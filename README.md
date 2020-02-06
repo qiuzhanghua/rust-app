@@ -28,3 +28,14 @@
       log files
             
 - Cargo.toml
+
+
+## Diesel
+
+diesel setup --database-url=mysql://app:app@localhost:3306/app
+
+diesel migration generate create_users
+
+diesel migration run --database-url=mysql://app:app@localhost:3306/app
+
+diesel migration redo --database-url=mysql://app:app@localhost:3306/app
