@@ -1,7 +1,5 @@
 # For documentation on how to configure this file,
-# see diesel.rs/guides/configuring-diesel-cli
+# see diesel.rs/guides/configuring-diesel-clidiesel.rs/guides/configuring-diesel-cli
 
 [print_schema]
 file = "src/db/schema.rs"
-file = "src/db/lib.rs"
-file = "src/db/models.rs"

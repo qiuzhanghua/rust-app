@@ -1,6 +1,8 @@
 #[macro_use]
+extern crate log;
+#[macro_use]
 extern crate lazy_static;
-//#[macro_use]
+#[macro_use]
 extern crate serde_json;
 #[macro_use]
 extern crate actix_web;
@@ -19,6 +21,7 @@ mod utils;
 mod config;
 mod db;
 mod handlers;
+mod auth;
 
 include!(concat!(env!("OUT_DIR"), "/generated.rs"));
 
@@ -38,6 +41,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(middleware::Logger::default())
 //            .data(web::JsonConfig::default().limit(4096))
+//            .wrap(crate::auth::mem::MemAuthentication)
             .service(actix_web_static_files::ResourceFiles::new(
                 "/public", generate(),
             ))

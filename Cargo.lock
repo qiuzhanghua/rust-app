@@ -124,7 +124,7 @@ dependencies = [
  "serde_urlencoded",
  "sha1",
  "slab",
- "time",
+ "time 0.1.42",
 ]
 
 [[package]]
@@ -138,7 +138,7 @@ dependencies = [
  "futures",
  "serde",
  "serde_json",
- "time",
+ "time 0.1.42",
 ]
 
 [[package]]
@@ -166,7 +166,7 @@ dependencies = [
  "httparse",
  "log",
  "mime",
- "time",
+ "time 0.1.42",
  "twoway",
 ]
 
@@ -191,7 +191,7 @@ dependencies = [
  "redis-async",
  "serde",
  "serde_json",
- "time",
+ "time 0.1.42",
  "tokio",
  "tokio-util",
 ]
@@ -264,7 +264,7 @@ dependencies = [
  "futures",
  "serde",
  "serde_json",
- "time",
+ "time 0.1.42",
 ]
 
 [[package]]
@@ -363,7 +363,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_urlencoded",
- "time",
+ "time 0.1.42",
  "url 2.1.1",
 ]
 
@@ -739,7 +739,7 @@ checksum = "31850b4a4d6bae316f7a09e691c944c28299298837edc0a03f755618c23cbc01"
 dependencies = [
  "num-integer",
  "num-traits",
- "time",
+ "time 0.1.42",
 ]
 
 [[package]]
@@ -892,9 +892,12 @@ version = "1.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9d7cc03b910de9935007861dce440881f69102aaaedfd4bc5a6f40340ca5840c"
 dependencies = [
+ "bitflags",
  "byteorder",
+ "chrono",
  "diesel_derives",
  "mysqlclient-sys",
+ "pq-sys",
  "r2d2",
  "url 1.7.2",
 ]
@@ -1520,6 +1523,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9a38661a28126f8621fb246611288ae28935ddf180f5e21f2d0fbfe5e4131dbe"
 
 [[package]]
+name = "jsonwebtoken"
+version = "7.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7577c6272114f9a75da574d2497509d7a73c25cd005a2df35e4a1845a6522ea4"
+dependencies = [
+ "base64",
+ "pem",
+ "ring",
+ "serde",
+ "serde_json",
+ "simple_asn1",
+]
+
+[[package]]
 name = "kernel32-sys"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1823,7 +1840,7 @@ dependencies = [
  "serde_json",
  "sha1",
  "sha2",
- "time",
+ "time 0.1.42",
  "twox-hash",
  "uuid",
 ]
@@ -2095,6 +2112,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a0858af4d9136275541f4eac7be1af70add84cf356d901799b065ac1b8ff6e2f"
 
 [[package]]
+name = "pem"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a1581760c757a756a41f0ee3ff01256227bdf64cb752839779b95ffb01c59793"
+dependencies = [
+ "base64",
+ "lazy_static",
+ "regex",
+]
+
+[[package]]
 name = "percent-encoding"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2254,6 +2282,15 @@ name = "ppv-lite86"
 version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "74490b50b9fbe561ac330df47c08f3f33073d2d00c150f719147d7c54522fa1b"
+
+[[package]]
+name = "pq-sys"
+version = "0.4.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6ac25eee5a0582f45a67e837e350d784e7003bd29a5f460796772061ca49ffda"
+dependencies = [
+ "vcpkg",
+]
 
 [[package]]
 name = "proc-macro-hack"
@@ -2558,7 +2595,7 @@ dependencies = [
 
 [[package]]
 name = "rust-app"
-version = "0.4.0"
+version = "0.4.8"
 dependencies = [
  "actix-files",
  "actix-identity",
@@ -2572,11 +2609,13 @@ dependencies = [
  "actix-web-static-files",
  "async-std",
  "bytes 0.5.4",
+ "chrono",
  "diesel",
  "env_logger",
  "futures",
  "handlebars",
  "json",
+ "jsonwebtoken",
  "lazy_static",
  "log",
  "log4rs",
@@ -2588,6 +2627,7 @@ dependencies = [
  "ring",
  "serde",
  "serde_json",
+ "time 0.2.6",
  "uuid",
  "viperus",
 ]
@@ -2617,6 +2657,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "138e3e0acb6c9fb258b19b67cb8abd63c00679d2851805ea151465464fe9030a"
 dependencies = [
  "semver",
+]
+
+[[package]]
+name = "rustversion"
+version = "1.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b3bba175698996010c4f6dce5e7f173b6eb781fce25d2cfc45e27091ce0b79f6"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
@@ -2801,6 +2852,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "simple_asn1"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2b25ecba7165254f0c97d6c22a64b1122a03634b18d20a34daf21e18f892e618"
+dependencies = [
+ "chrono",
+ "num-bigint",
+ "num-traits",
+]
+
+[[package]]
 name = "siphasher"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2963,6 +3025,38 @@ dependencies = [
  "libc",
  "redox_syscall",
  "winapi 0.3.8",
+]
+
+[[package]]
+name = "time"
+version = "0.2.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bcb8742444475438c500d017736dd7cf3d9c9dd1f0153cfa4af428692484e3ef"
+dependencies = [
+ "rustversion",
+ "time-macros",
+]
+
+[[package]]
+name = "time-macros"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9ae9b6e9f095bc105e183e3cd493d72579be3181ad4004fceb01adbe9eecab2d"
+dependencies = [
+ "proc-macro-hack",
+ "time-macros-impl",
+]
+
+[[package]]
+name = "time-macros-impl"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e987cfe0537f575b5fc99909de6185f6c19c3ad8889e2275e686a873d0869ba1"
+dependencies = [
+ "proc-macro-hack",
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]

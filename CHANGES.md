@@ -1,6 +1,13 @@
 # Changes
 
 
+## 0.4.8 - 2020-02-07
+### Added
+1. connection pool
+2. try ONCE and Lazy_static
+3. begin JWT
+
+
 ## 0.4.0 - 2020-02-06
 ### Added
 1. diesel(ORM) for mysql(CRUD)

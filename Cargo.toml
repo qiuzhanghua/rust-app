@@ -1,6 +1,6 @@
 [package]
 name = "rust-app"
-version = "0.4.0"
+version = "0.4.8"
 authors = ["Daniel <qiuzhanghua@icloud.com>"]
 edition = "2018"
 build = "src/build.rs"
@@ -22,7 +22,8 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 json="0.12"
 r2d2 = "0.8"
-diesel = { version = "^1.1.0", features = ["mysql", "r2d2"] }
+diesel = { version = "^1.1.0", features = ["postgres", "mysql", "r2d2", "chrono"] }
+chrono = "0.4"
 uuid = { version = "0.8", features = ["serde", "v5"] }
 ring = "0.16"
 actix-session = "0.3"
@@ -38,6 +39,10 @@ redis = "0.15"
 
 lazy_static = "1.4"
 regex = "1"
+
+jsonwebtoken = "7"
+time = "0.2"
+
 # sqlx = "0.2" #Type-safe SQL #Truly Asynchronous
 
 [build-dependencies]
