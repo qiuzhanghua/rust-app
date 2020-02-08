@@ -11,9 +11,10 @@ use std::{
     pin::Pin,
     task::{Context, Poll},
 };
-use jsonwebtoken::{Header, Validation, DecodingKey};
-use time::PrimitiveDateTime;
+use jsonwebtoken::{Validation, DecodingKey};
 use serde::{Serialize, Deserialize};
+use std::sync::{Arc, Mutex};
+use crate::auth::AccountService;
 
 pub const MESSAGE_OK: &str = "ok";
 pub const MESSAGE_CAN_NOT_FETCH_DATA: &str = "Can not fetch data";
@@ -45,14 +46,16 @@ pub const IGNORE_ROUTES: [&str; 3] = ["/api/ping", "/api/auth/signup", "/api/aut
 pub static KEY: [u8; 16] = [23, 54, 78, 30, 91, 56, 02, 43, 63, 31, 87, 48, 55, 11, 99, 130];
 
 #[derive(Serialize, Deserialize)]
-struct MemToken {
-    iss: String,
-    exp: i64,
-    sub: String,
-    aud: String,
-    nbf: i64,
-    iat: i64,
-    jti: String,
+pub struct MemToken {
+    //   pub iss: String,
+    pub exp: i64,
+    //    pub sub: String,
+    //    pub aud: String,
+    //    pub nbf: i64,
+    pub iat: i64,
+    //    pub jti: String,
+    pub  name: String,
+    pub login_extra: String, // such as session etc
 }
 
 pub struct MemAuthentication;
@@ -112,7 +115,9 @@ impl<S, B> Service for MemAuthenticationMiddleware<S>
                     let token = authen_str[6..authen_str.len()].trim();
                     if let Ok(token_data) = jsonwebtoken::decode::<MemToken>(&token.to_string(),
                                                                              &DecodingKey::from_secret("secret".as_ref()), &Validation::default()) {
-                        if !token_data.claims.aud.is_empty() {
+                        let x = req.app_data::<Arc<Mutex<AccountService>>>();
+                        println!("{:?}", x);  // todo more check
+                        if !token_data.claims.name.is_empty() {
                             info!("Valid token");
                             authenticate_pass = true;
                         } else {

@@ -28,7 +28,7 @@ pub struct UserVo {
 
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PUT
 #[put("/users")]
-pub fn put_user(item: web::Json<UserVo>) -> HttpResponse {
+pub async fn put_user(item: web::Json<UserVo>) -> HttpResponse {
     let u = create_user(&item.name, &item.email, item.enabled);
     if u.is_some() {
         let body = serde_json::to_string(&u.unwrap()).unwrap();

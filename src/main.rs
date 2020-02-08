@@ -16,6 +16,9 @@ use actix_web::{middleware, web, App, HttpServer};
 use actix_web_static_files;
 use std::collections::HashMap;
 use handlebars::Handlebars;
+use crate::auth::AccountService;
+use std::sync::{Mutex, Arc};
+use std::cell::{Cell, RefCell};
 
 mod utils;
 mod config;
@@ -37,11 +40,14 @@ async fn main() -> std::io::Result<()> {
         .unwrap();
     let handlebars_ref = web::Data::new(handlebars);
 
+    let mut auth_service  = Arc::new(Mutex::new(AccountService::new()));
+
     HttpServer::new(move || {
         App::new()
             .wrap(middleware::Logger::default())
 //            .data(web::JsonConfig::default().limit(4096))
-//            .wrap(crate::auth::mem::MemAuthentication)
+            .data(auth_service.clone())
+            .wrap(crate::auth::jwt::MemAuthentication)
             .service(actix_web_static_files::ResourceFiles::new(
                 "/public", generate(),
             ))
@@ -56,6 +62,9 @@ async fn main() -> std::io::Result<()> {
             .service(handlers::disp_user)
             .service(handlers::delete_user)
             .service(handlers::put_user)
+            .service(auth::handlers::signup)
+            .service(auth::handlers::login)
+            .service(auth::handlers::logout)
     })
         .bind("127.0.0.1:8080")?
         .run()

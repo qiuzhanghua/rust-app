@@ -24,7 +24,7 @@ json="0.12"
 r2d2 = "0.8"
 diesel = { version = "^1.1.0", features = ["postgres", "mysql", "r2d2", "chrono"] }
 chrono = "0.4"
-uuid = { version = "0.8", features = ["serde", "v5"] }
+uuid = { version = "0.8", features = ["serde", "v4", "v5"] }
 ring = "0.16"
 actix-session = "0.3"
 actix-redis = { version = "0.8", features = ["web"] }

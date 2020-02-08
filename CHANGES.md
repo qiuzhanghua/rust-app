@@ -1,5 +1,8 @@
 # Changes
 
+## 0.5.0 - 2020-02-08
+### Added
+1. complete JWT Demo
 
 ## 0.4.8 - 2020-02-07
 ### Added
