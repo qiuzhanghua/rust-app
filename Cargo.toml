@@ -1,6 +1,6 @@
 [package]
 name = "rust-app"
-version = "0.4.8"
+version = "0.5.0"
 authors = ["Daniel <qiuzhanghua@icloud.com>"]
 edition = "2018"
 build = "src/build.rs"
