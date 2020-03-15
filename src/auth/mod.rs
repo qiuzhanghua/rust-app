@@ -3,7 +3,7 @@ use time::PrimitiveDateTime;
 use uuid::Uuid;
 use serde::{Serialize, Deserialize};
 use actix_web::http::HeaderValue;
-use jsonwebtoken::{DecodingKey, Validation};
+use jsonwebtoken::{DecodingKey, Validation, EncodingKey, Header};
 use crate::auth::jwt::MemToken;
 use std::hash::Hasher;
 
@@ -89,7 +89,8 @@ impl AuthService for AccountService {
                 login_extra: Uuid::new_v4().to_simple().to_string(),
             };
             self.accounts.insert(account.clone());
-            Ok(json!({ "token": account.login_extra, "token_type": "bearer" }).to_string())
+//            Ok(json!({ "token": account.login_extra, "token_type": "bearer" }).to_string())
+            Ok(jsonwebtoken::encode(&Header::default(), &account, &EncodingKey::from_secret("secret".as_ref())).unwrap())
 //            Ok(serde_json::to_string(&account).unwrap())
         }
     }
@@ -100,7 +101,8 @@ impl AuthService for AccountService {
         } else {
             if let Some(x) = self.accounts.iter().find(|&x| { x.name == lv.name }) {
                 // should update iat and exp etc
-                Ok(json!({ "token": x.login_extra, "token_type": "bearer" }).to_string())
+                // Ok(json!({ "token": x.login_extra, "token_type": "bearer" }).to_string())
+                Ok(jsonwebtoken::encode(&Header::default(), x, &EncodingKey::from_secret("secret".as_ref())).unwrap())
             } else {
                 Err("not found".to_string())
             }
@@ -108,15 +110,20 @@ impl AuthService for AccountService {
     }
 
     fn logout(&mut self, authen_header: &HeaderValue) -> Result<(), String> {
+        info!("authen_header = {:?}", authen_header);
         if let Ok(authen_str) = authen_header.to_str() {
-            if authen_str.starts_with("bearer") {
+            if authen_str.starts_with("bearer") || authen_str.starts_with("Bearer") {
                 let token = authen_str[6..authen_str.len()].trim();
 //                jsonwebtoken::decode::<MemToken>(&token, decoding_key, &Validation::default());
-                if let Ok(token_data) = jsonwebtoken::decode::<MemToken>(&token, &DecodingKey::from_secret(self.secret.as_ref()), &Validation::default()) {
+                if let Ok(token_data) = jsonwebtoken::decode::<Account>(&token, &DecodingKey::from_secret(self.secret.as_ref()), &Validation::default()) {
                     let token = token_data.claims;
+                    println!("token = {:?}", token);
                     let mut accounts = self.accounts.clone();
                     let account = accounts.iter().find(|&x| { x.name == token.name });
-                    if account.is_some() { self.accounts.remove(account.unwrap()); }
+                    println!("account = {:?}", account);
+                    if account.is_some() {
+                        println!("logout OK");
+                        self.accounts.remove(account.unwrap()); }
                     return Ok(());
                 };
             };

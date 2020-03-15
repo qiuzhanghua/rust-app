@@ -14,7 +14,7 @@ use std::{
 use jsonwebtoken::{Validation, DecodingKey};
 use serde::{Serialize, Deserialize};
 use std::sync::{Arc, Mutex};
-use crate::auth::AccountService;
+use crate::auth::{AccountService, Account};
 
 pub const MESSAGE_OK: &str = "ok";
 pub const MESSAGE_CAN_NOT_FETCH_DATA: &str = "Can not fetch data";
@@ -110,10 +110,12 @@ impl<S, B> Service for MemAuthenticationMiddleware<S>
 
         if let Some(authen_header) = req.headers_mut().get(AUTHORIZATION) {
             if let Ok(authen_str) = authen_header.to_str() {
+                info!("{}", authen_str);
                 if authen_str.starts_with("bearer") || authen_str.starts_with("Bearer") {
                     info!("Parsing token...");
                     let token = authen_str[6..authen_str.len()].trim();
-                    if let Ok(token_data) = jsonwebtoken::decode::<MemToken>(&token.to_string(),
+                    info!("{}", token);
+                    if let Ok(token_data) = jsonwebtoken::decode::<Account>(&token.to_string(),
                                                                              &DecodingKey::from_secret("secret".as_ref()), &Validation::default()) {
                         let x = req.app_data::<Arc<Mutex<AccountService>>>();
                         println!("{:?}", x);  // todo more check

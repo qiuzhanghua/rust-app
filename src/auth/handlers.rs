@@ -19,7 +19,7 @@ pub async fn signup(signup_vo: web::Json<SignupVo>, service: web::Data<Arc<Mutex
 pub fn login(login_vo: web::Json<LoginVo>, service: web::Data<Arc<Mutex<AccountService>>>) -> HttpResponse {
     let mut service = service.lock().unwrap();
     match service.login(login_vo.0) {
-        Ok(_token_res) => HttpResponse::Ok().finish(),
+        Ok(token_res) => HttpResponse::Ok().body(token_res),
         Err(err) => HttpResponse::build(StatusCode::INTERNAL_SERVER_ERROR).body(err)
     }
 }
